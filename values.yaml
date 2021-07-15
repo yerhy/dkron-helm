@@ -1,6 +1,3 @@
-persistence:
-    size: "500Mi"
-
 version: "v3.1.8"
 
 image: "registry.nscloud:5000/kunkka/saas/nscloud-dkron-api:3.1.8"
@@ -10,10 +7,14 @@ log:
 
 server:
     replicas: 3
-    bootstrapExpected: 2
+    bootstrapExpected: 1
+    storageClass: 'rook-ceph-block'
+    persistenceSize: '2Gi'
 
 agent:
     replicas: 1
+    storageClass: 'rook-ceph-block'
+    persistenceSize: '2Gi'
 
 nodeSelector: {}
 tolerations: []

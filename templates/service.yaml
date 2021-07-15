@@ -4,7 +4,6 @@ metadata:
     name: dkron
     namespace: {{ .Release.Namespace }}
 spec:
-    type: NodePort
     selector:
         app: dkron
     ports:

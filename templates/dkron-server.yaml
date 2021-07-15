@@ -1,5 +1,5 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
     name: {{ .Chart.Name }}-server
     namespace: {{ .Release.Namespace }}
@@ -8,10 +8,22 @@ metadata:
         component: server
 spec:
     replicas: {{ .Values.server.replicas }}
+    serviceName: dkron-server
     selector:
         matchLabels:
             app: dkron
             component: server
+    volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: {{ .Values.server.persistenceSize }}
+        storageClassName: {{ .Values.server.storageClass }}
+        volumeMode: Filesystem
     template:
         metadata:
             name: dkron-server
@@ -23,9 +35,6 @@ spec:
             terminationGracePeriodSeconds: 30
             nodeSelector: {{ toYaml .Values.nodeSelector | nindent 16 }}
             tolerations: {{ toYaml .Values.tolerations | nindent 16 }}
-            volumes:
-              -     name: data
-                    emptyDir: {}
             containers:
                 -   name: dkron-server
                     image: "{{ .Values.image }}"
